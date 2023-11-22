@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/JigsawGame.unity
+    path: Assets/Scenes/Game/PersistantScnene.unity
+    guid: 7cf906b7d401dc04a844292c11d7d206
+  - enabled: 1
+    path: Assets/Scenes/Game/LevelMenu.unity
+    guid: 97506924f9bde4b4d913e4279b0a3fbb
+  - enabled: 1
+    path: Assets/Scenes/Game/JigsawGame.unity
     guid: 53e609bdc4d6c7945934a8c8694c3e26
   m_configObjects: {}

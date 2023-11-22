@@ -56,7 +56,7 @@ public class JigsawGame : BoardGen
         Puzzle.Tile.TilesSorting.Clear();
 
         // Get the finename from the JigsawGameData singleton.
-        ImageFilename = JigsawGameData.Instance.mFilename;
+        ImageFilename = GameManager.Instance.CurrentImagePath;
 
         // Create the Jigsaw board.
         // We will change the flow when we implement

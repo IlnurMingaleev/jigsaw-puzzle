@@ -11,6 +11,12 @@ public class JigsawGameData : Singleton<JigsawGameData>
     public int mTotalTilesInCorrectPosition = 0;
     //public int mImageIndex = 0;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        mFilename = GameManager.Instance.CurrentImagePath;
+    }
+
     public List<(string, string)> mNamedImages = new List<(string, string)>()
     {
         ("Nature",          "images/image01_8_5"),

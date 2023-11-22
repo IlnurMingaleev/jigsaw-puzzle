@@ -79,8 +79,8 @@ public class Menu : MonoBehaviour
 
     public void OnClickBtnHome()
     {
-        if (!Enabled) return;
-        OnClickHome?.Invoke();
+        
+        GameManager.Instance.LoadLevelSelectScreen();
     }
 
     public void OnClickBtnReset()
@@ -94,10 +94,11 @@ public class Menu : MonoBehaviour
         OnClickPlay?.Invoke();
     }
 
-    public void OnClickBtnNext()
+    /*public void OnClickBtnNext()
     {
         OnClickNext?.Invoke();
     }
+    */
 
     public void SetActivePlayBtn(bool flag)
     {
