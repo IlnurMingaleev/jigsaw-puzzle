@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Puzzle;
+using Ui;
 
 public class TileMovement : MonoBehaviour
 {
@@ -43,9 +44,9 @@ public class TileMovement : MonoBehaviour
 
         if (!TileMovementEnabled || !enabled)
             return;
-
-        // Hit piece. So disable the camera panning.
-        CameraMovement.CameraPanning = false;
+       
+        
+        
 
         Tile.TilesSorting.BringToTop(mSpriteRenderer);
         mOffset = transform.position - Camera.main.ScreenToWorldPoint(
@@ -61,7 +62,8 @@ public class TileMovement : MonoBehaviour
 
         if (!TileMovementEnabled || !enabled)
             return;
-
+        
+        
         Vector3 curScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f);
         Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + mOffset;
         transform.position = curPosition;
@@ -75,16 +77,15 @@ public class TileMovement : MonoBehaviour
 
         if (!TileMovementEnabled || !enabled)
             return;
-
+        
+        
         float dist = (transform.position - GetCorrectPosition()).magnitude;
         if (dist < 20.0f)
         {
             transform.position = GetCorrectPosition();
             OnTileInPlace?.Invoke(this);
         }
-
-        // Enable back the camera panning.
-        CameraMovement.CameraPanning = true;
+        
     }
 
     void LateUpdate()

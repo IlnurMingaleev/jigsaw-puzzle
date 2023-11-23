@@ -24,7 +24,6 @@ public class StateWaiting : State<JigsawGameStates>
         base.Exit();
 
         // Enabble back camera movement and menu input handling.
-        CameraMovement.CameraPanning = true;
         Menu.Enabled = true;
 
         Game.menu.SetActivePlayBtn(false);

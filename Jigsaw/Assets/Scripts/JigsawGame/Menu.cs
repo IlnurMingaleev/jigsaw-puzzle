@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +12,10 @@ public class Menu : MonoBehaviour
     public Button BtnReset;
     public FixedButton BtnZoomOut;
     public FixedButton BtnHint;
+    public Button BtnCameraPan;
+    
+    public GameObject _scrollView;
+    private Image btnCameraPanImage;
 
     public Button BtnPlay;
     public Button BtnNext;
@@ -26,7 +32,11 @@ public class Menu : MonoBehaviour
     public DelegateOnClick OnClickReset;
     public DelegateOnClick OnClickZoomOut;
     public DelegateOnClick OnClickPlay;
+    public DelegateOnClick OnClickCameraPan;
+    
     public DelegateOnClick OnClickNext;
+    private CompositeDisposable disposable = new CompositeDisposable();
+
 
     // Our game controls when the menu is enabled of disabled.
     // Enabled = false means that the UI won't handle
@@ -34,12 +44,30 @@ public class Menu : MonoBehaviour
     static public bool Enabled { get; set; } = true;
 
     // Start is called before the first frame update
-    void Start()
+    private void OnValidate()
     {
-        
+        if (BtnCameraPan) btnCameraPanImage = BtnCameraPan.GetComponent<Image>();
+    }
+
+    private void Start()
+    {
+        BtnCameraPan.OnClickAsObservable()
+            .Subscribe(_ => OnClickCameraPan?.Invoke())
+            .AddTo(disposable);
+    }
+
+    private void OnEnable()
+    {
+        OnClickCameraPan += SetCameraBtnImageColor;
+    }
+
+    private void OnDisable()
+    {
+        OnClickCameraPan -= SetCameraBtnImageColor;
     }
 
     // Update is called once per frame
+
     void Update()
     {
         if (!Enabled) return;
@@ -53,6 +81,8 @@ public class Menu : MonoBehaviour
         {
             OnClickZoomOut?.Invoke();
         }
+
+        
     }
 
     public void SetTotalTiles(int count)
@@ -94,6 +124,7 @@ public class Menu : MonoBehaviour
         OnClickPlay?.Invoke();
     }
 
+
     /*public void OnClickBtnNext()
     {
         OnClickNext?.Invoke();
@@ -109,5 +140,12 @@ public class Menu : MonoBehaviour
         BtnReset.gameObject.SetActive(!flag);
         BtnZoomOut.gameObject.SetActive(!flag);
         BtnHint.gameObject.SetActive(!flag);
+        BtnCameraPan.gameObject.SetActive(!flag);
+        _scrollView.SetActive(!flag);
+    }
+
+    private void SetCameraBtnImageColor()
+    {
+        btnCameraPanImage.color = CameraMovement.CameraPanning ? Color.white: Color.green;
     }
 }

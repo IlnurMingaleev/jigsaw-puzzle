@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Ui;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,24 +13,20 @@ public class Point_Viz : MonoBehaviour
     public OnPointChange mOnDragStart;
     public OnPointChange mOnDragStop;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     void OnMouseDown()
     {
         if (EventSystem.current.IsPointerOverGameObject())
         {
             return;
         }
-
+        RaycastHit2D hit = Physics2D.Raycast(Input.mousePosition, Vector2.zero);
+        if (hit)
+        {
+            FullImage fullImage;
+            if(hit.collider.gameObject.TryGetComponent(out fullImage))
+                return;
+        }
         mOffset = transform.position - Camera.main.ScreenToWorldPoint(
             new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
 
@@ -43,6 +40,16 @@ public class Point_Viz : MonoBehaviour
         {
             return;
         }
+
+        RaycastHit2D hit = Physics2D.Raycast(Input.mousePosition, Vector2.zero);
+        if (hit)
+        {
+            FullImage fullImage;
+            if(hit.collider.gameObject.TryGetComponent(out fullImage))
+                return;
+        }
+        
+
         Vector3 curScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f);
         Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + mOffset;
         transform.position = curPosition;
@@ -55,11 +62,15 @@ public class Point_Viz : MonoBehaviour
         {
             return;
         }
-
+        RaycastHit2D hit = Physics2D.Raycast(Input.mousePosition, Vector2.zero);
+        if (hit)
+        {
+            FullImage fullImage;
+            if(hit.collider.gameObject.TryGetComponent(out fullImage))
+                return;
+        }
         mOnDragStop?.Invoke(transform);
     }
 
-    void LateUpdate()
-    {
-    }
+
 }

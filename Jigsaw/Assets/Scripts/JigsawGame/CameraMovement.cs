@@ -16,7 +16,7 @@ public class CameraMovement : MonoBehaviour
 
     public Menu menu;
 
-    public static bool CameraPanning { get; set; } = true;
+    public static bool CameraPanning { get; set; } = false;
 
     void Start()
     {
@@ -26,6 +26,13 @@ public class CameraMovement : MonoBehaviour
         menu.OnClickReset += ResetCameraView;
         menu.OnClickZoomIn += ZoomIn;
         menu.OnClickZoomOut += ZoomOut;
+        menu.OnClickCameraPan += SetCameraPan;
+    }
+
+    private void SetCameraPan()
+    {
+        CameraPanning = !CameraPanning;
+        
     }
 
     public void RePositionCamera(int numTilesX, int numTilesY)

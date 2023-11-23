@@ -1,13 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Puzzle;
+using Ui;
+using UniRx;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
-public class BoardGen : MonoBehaviour
+public class BoardGen : MonoBehaviour,IDisposable
 {
     public string ImageFilename;
-    public Transform ParentForTiles;
+    public Transform nonActiveParentForTiles;
+    public Transform activeParentForTiles;
 
+    public Image buttonPrefab;
+    public Transform scrollViewContentTransform;
     public bool LoadingFinished { get; set; } = false;
 
     // The opaque sprite. 
@@ -22,7 +30,10 @@ public class BoardGen : MonoBehaviour
 
     // The game object that holds the transparent sprite.
     GameObject mGameObjectTransparent;
-
+    
+    private Dictionary<int,GameObject> puzzleByHash = new Dictionary<int,GameObject>();
+    
+    private CompositeDisposable disposables = new CompositeDisposable();
     Sprite LoadBaseTexture()
     {
         Texture2D tex = SpriteUtils.LoadTexture(ImageFilename);
@@ -111,7 +122,7 @@ public class BoardGen : MonoBehaviour
             newTex.height);
         return sprite;
     }
-
+    
     #region Coroutines to load create the board.
     public void CreateJigsawBoardUsingCoroutines()
     {
@@ -124,6 +135,8 @@ public class BoardGen : MonoBehaviour
         mGameObjectOpaque.name = ImageFilename + "_Opaque";
         mGameObjectOpaque.AddComponent<SpriteRenderer>().sprite = mBaseSpriteOpaque;
         mGameObjectOpaque.GetComponent<SpriteRenderer>().sortingLayerName = "Opaque";
+        mGameObjectOpaque.AddComponent<FullImage>();
+        
 
         StartCoroutine(Coroutine_CreateJigsawBoard());
     }
@@ -135,6 +148,7 @@ public class BoardGen : MonoBehaviour
         mGameObjectTransparent.name = ImageFilename + "_Transparent";
         mGameObjectTransparent.AddComponent<SpriteRenderer>().sprite = mBaseSpriteTransparent;
         mGameObjectTransparent.GetComponent<SpriteRenderer>().sortingLayerName = "Transparent";
+        mGameObjectTransparent.AddComponent<FullImage>();
         yield return null;
 
         yield return StartCoroutine(Coroutine_CreateJigsawTiles());
@@ -233,9 +247,19 @@ public class BoardGen : MonoBehaviour
                 // Create a game object for the tile.
                 mTileGameObjects[i, j] = Tile.CreateGameObjectFromTile(tile);
 
-                if (ParentForTiles != null)
+                if (nonActiveParentForTiles != null)
                 {
-                    mTileGameObjects[i, j].transform.SetParent(ParentForTiles);
+                    mTileGameObjects[i, j].transform.SetParent(nonActiveParentForTiles);
+                    GameObject gObject = mTileGameObjects[i, j];
+                    buttonPrefab.sprite = mTileGameObjects[i, j].GetComponent<SpriteRenderer>().sprite;
+                    GameObject go = Instantiate(buttonPrefab.gameObject, scrollViewContentTransform, true);
+                    //puzzleByHash.Add(buttonPrefab.sprite.GetHashCode(),mTileGameObjects[i,j]);
+                    Button button = go.GetComponent<Button>();
+                    button
+                        .OnClickAsObservable()
+                        .Subscribe(_ => OnUIPuzzleClick(gObject,button))
+                        .AddTo(disposables);
+
                 }
                 yield return null;
             }
@@ -361,12 +385,15 @@ public class BoardGen : MonoBehaviour
                 // Create a game object for the tile.
                 mTileGameObjects[i, j] = Tile.CreateGameObjectFromTile(tile);
 
-                if (ParentForTiles != null)
+                if (nonActiveParentForTiles != null)
                 {
-                    mTileGameObjects[i, j].transform.SetParent(ParentForTiles);
+                    mTileGameObjects[i, j].transform.SetParent(nonActiveParentForTiles);
+                    
                 }
             }
+            
         }
+       
     }
 
     #region Other public functions
@@ -375,4 +402,16 @@ public class BoardGen : MonoBehaviour
         mGameObjectOpaque.SetActive(flag);
     }
     #endregion
+
+    public void OnUIPuzzleClick(GameObject gameObj,Button button)
+    {
+        gameObj.transform.position = mGameObjectTransparent.transform.position;
+        gameObj.transform.SetParent(activeParentForTiles);
+        Destroy(button.gameObject);
+    }
+
+    public void Dispose()
+    {
+        disposables.Clear();
+    }
 }
