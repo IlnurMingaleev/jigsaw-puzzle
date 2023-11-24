@@ -26,6 +26,8 @@ public class Menu : MonoBehaviour
 
     public Text TextWin;
 
+    public GameObject NonActiveGameObject;
+    
     public delegate void DelegateOnClick();
     public DelegateOnClick OnClickHome;
     public DelegateOnClick OnClickZoomIn;
@@ -135,12 +137,14 @@ public class Menu : MonoBehaviour
     {
         BtnPlay.gameObject.SetActive(flag);
         BtnNext.gameObject.SetActive(flag);
+        NonActiveGameObject.SetActive(flag);
 
         BtnZoomIn.gameObject.SetActive(!flag);
         BtnReset.gameObject.SetActive(!flag);
         BtnZoomOut.gameObject.SetActive(!flag);
         BtnHint.gameObject.SetActive(!flag);
         BtnCameraPan.gameObject.SetActive(!flag);
+        
         _scrollView.SetActive(!flag);
     }
 

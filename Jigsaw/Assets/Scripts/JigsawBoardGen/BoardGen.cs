@@ -33,6 +33,7 @@ public class BoardGen : MonoBehaviour,IDisposable
     
     private Dictionary<int,GameObject> puzzleByHash = new Dictionary<int,GameObject>();
     
+    private List<GameObject> uiPuzzles = new List<GameObject>();
     private CompositeDisposable disposables = new CompositeDisposable();
     Sprite LoadBaseTexture()
     {
@@ -259,11 +260,13 @@ public class BoardGen : MonoBehaviour,IDisposable
                         .OnClickAsObservable()
                         .Subscribe(_ => OnUIPuzzleClick(gObject,button))
                         .AddTo(disposables);
+                    uiPuzzles.Add(go);
 
                 }
                 yield return null;
             }
         }
+        Shuffle();
     }
     #endregion
 
@@ -402,7 +405,20 @@ public class BoardGen : MonoBehaviour,IDisposable
         mGameObjectOpaque.SetActive(flag);
     }
     #endregion
+    
+    public void Shuffle() {
+        for (int i = 0; i < uiPuzzles.Count; i++) {
+            int randomIndex = Random.Range(0, uiPuzzles.Count);
+            GameObject temp = uiPuzzles[i];
+            uiPuzzles[i] = uiPuzzles[randomIndex];
+            uiPuzzles[randomIndex] = temp;
+        }
 
+        // Update the Hierarchy to reflect the shuffled order
+        foreach (GameObject gameObject in uiPuzzles) {
+            gameObject.transform.SetSiblingIndex(uiPuzzles.IndexOf(gameObject));
+        }
+    }
     public void OnUIPuzzleClick(GameObject gameObj,Button button)
     {
         gameObj.transform.position = mGameObjectTransparent.transform.position;
